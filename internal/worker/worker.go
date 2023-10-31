@@ -24,8 +24,12 @@ type Worker interface {
 func Register(cfg Config) []Worker {
 	var workers []Worker
 
-	workers = append(workers, newPodResource())
-	workers = append(workers, newDeploymentResource())
+	w := worker{
+		Cfg: cfg,
+	}
+
+	workers = append(workers, w.newPodResource())
+	workers = append(workers, w.newDeploymentResource())
 
 	return workers
 }
