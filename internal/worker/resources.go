@@ -9,12 +9,11 @@ import (
 	cv1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 	toolsWatch "k8s.io/client-go/tools/watch"
 )
 
-func newPodResource(client *kubernetes.Clientset, cfg Config) *worker {
+func newPodResource(cfg Config) *worker {
 	w := newWorker(enum.PodResource)
 
 	if cfg.Has(w.Resource) {
@@ -23,7 +22,7 @@ func newPodResource(client *kubernetes.Clientset, cfg Config) *worker {
 			watchFunc := func(options v1.ListOptions) (watch.Interface, error) {
 				timeOut := int64(60)
 
-				return client.CoreV1().Pods("").Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+				return cfg.Client.CoreV1().Pods("").Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 			}
 
 			watcher, _ := toolsWatch.NewRetryWatcher("1", &cache.ListWatch{WatchFunc: watchFunc})
@@ -44,7 +43,7 @@ func newPodResource(client *kubernetes.Clientset, cfg Config) *worker {
 	return w
 }
 
-func newDeploymentResource(client *kubernetes.Clientset, cfg Config) *worker {
+func newDeploymentResource(cfg Config) *worker {
 	w := newWorker(enum.DeploymentResource)
 
 	if cfg.Has(w.Resource) {

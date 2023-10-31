@@ -2,8 +2,6 @@ package worker
 
 import (
 	"github.com/amirhnajafiz/sanjab/pkg/enum"
-
-	"k8s.io/client-go/kubernetes"
 )
 
 // Worker manages a resource by watching it
@@ -16,11 +14,11 @@ type Worker interface {
 }
 
 // Register system workers
-func Register(client *kubernetes.Clientset, cfg Config) []Worker {
+func Register(cfg Config) []Worker {
 	var workers []Worker
 
-	workers = append(workers, newPodResource(client, cfg))
-	workers = append(workers, newDeploymentResource(client, cfg))
+	workers = append(workers, newPodResource(cfg))
+	workers = append(workers, newDeploymentResource(cfg))
 
 	return workers
 }

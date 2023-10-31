@@ -1,9 +1,16 @@
 package worker
 
-import "github.com/amirhnajafiz/sanjab/pkg/enum"
+import (
+	"github.com/amirhnajafiz/sanjab/pkg/enum"
+
+	"k8s.io/client-go/kubernetes"
+)
 
 type Config struct {
+	Client    *kubernetes.Clientset
 	Resources []string
+	Timeout   int
+	Namespace string
 }
 
 func (c Config) Has(resource enum.Resource) bool {

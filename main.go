@@ -20,7 +20,14 @@ func main() {
 	clientSet, _ := kubernetes.NewForConfig(cfg)
 
 	// create workers
-	workers := worker.Register(clientSet, worker.Config{Resources: configs.Resources})
+	workers := worker.Register(
+		worker.Config{
+			Client:    clientSet,
+			Timeout:   configs.Timeout,
+			Namespace: configs.Namespace,
+			Resources: configs.Resources,
+		},
+	)
 
 	// start workers
 	for _, item := range workers {
