@@ -37,4 +37,6 @@ func main() {
 			}
 		}(item)
 	}
+
+	// register http server
 }
