@@ -6,6 +6,7 @@ const (
 	PendingStatus Status = iota + 1
 	StartedStatus
 	FailureStatus
+	DisableStatus
 )
 
 func (s Status) ToString() string {
@@ -16,6 +17,8 @@ func (s Status) ToString() string {
 		return "Started"
 	case FailureStatus:
 		return "Failed"
+	case DisableStatus:
+		return "Disable"
 	default:
 		return "Unknown"
 	}

@@ -39,10 +39,11 @@ func (w worker) GetResource() string {
 	return w.Resource.ToString()
 }
 
+// newWorker returns a raw worker with disabled status
 func newWorker(resource enum.Resource) *worker {
 	return &worker{
 		Resource: resource,
-		Status:   enum.PendingStatus,
+		Status:   enum.DisableStatus,
 		CallBack: func() error {
 			return nil
 		},
