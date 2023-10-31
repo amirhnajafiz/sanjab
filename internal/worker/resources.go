@@ -2,56 +2,37 @@ package worker
 
 import (
 	"context"
-	"log"
 
 	"github.com/amirhnajafiz/sanjab/pkg/enum"
 
-	cv1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
-	"k8s.io/client-go/tools/cache"
-	toolsWatch "k8s.io/client-go/tools/watch"
 )
 
-func newPodResource(cfg Config) *worker {
+func newPodResource() *worker {
 	w := newWorker(enum.PodResource)
 
-	if cfg.Has(w.Resource) {
+	if w.Cfg.Has(w.Resource) {
 		w.Status = enum.PendingStatus
-		w.CallBack = func() error {
-			watchFunc := func(options v1.ListOptions) (watch.Interface, error) {
-				timeOut := int64(60)
+		w.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			timeOut := int64(60)
 
-				return cfg.Client.CoreV1().Pods("").Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
-			}
-
-			watcher, _ := toolsWatch.NewRetryWatcher("1", &cache.ListWatch{WatchFunc: watchFunc})
-
-			for event := range watcher.ResultChan() {
-				item := event.Object.(*cv1.Pod)
-
-				if event.Type == watch.Added {
-					// save item to storage
-					log.Println(item)
-				}
-			}
-
-			return nil
+			return w.Cfg.Client.CoreV1().Pods("").Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 	}
 
 	return w
 }
 
-func newDeploymentResource(cfg Config) *worker {
+func newDeploymentResource() *worker {
 	w := newWorker(enum.DeploymentResource)
 
-	if cfg.Has(w.Resource) {
+	if w.Cfg.Has(w.Resource) {
 		w.Status = enum.PendingStatus
-		w.CallBack = func() error {
-			// some logic
+		w.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			timeOut := int64(60)
 
-			return nil
+			return w.Cfg.Client.AppsV1().Deployments("").Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 	}
 

@@ -1,7 +1,14 @@
 package worker
 
 import (
+	"log"
+
 	"github.com/amirhnajafiz/sanjab/pkg/enum"
+
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/watch"
+	"k8s.io/client-go/tools/cache"
+	toolsWatch "k8s.io/client-go/tools/watch"
 )
 
 // Worker manages a resource by watching it
@@ -17,20 +24,36 @@ type Worker interface {
 func Register(cfg Config) []Worker {
 	var workers []Worker
 
-	workers = append(workers, newPodResource(cfg))
-	workers = append(workers, newDeploymentResource(cfg))
+	workers = append(workers, newPodResource())
+	workers = append(workers, newDeploymentResource())
 
 	return workers
 }
 
 type worker struct {
-	CallBack func() error
-	Status   enum.Status
-	Resource enum.Resource
+	WatcherFunc func(options v1.ListOptions) (watch.Interface, error)
+	Status      enum.Status
+	Resource    enum.Resource
+	Cfg         Config
 }
 
 func (w worker) Watch() error {
-	return w.CallBack()
+	return func() error {
+		if w.Status == enum.DisableStatus {
+			return nil
+		}
+
+		watcher, _ := toolsWatch.NewRetryWatcher("1", &cache.ListWatch{WatchFunc: w.WatcherFunc})
+
+		for event := range watcher.ResultChan() {
+			if event.Type == watch.Added {
+				// save item to storage
+				log.Println(event.Object.DeepCopyObject())
+			}
+		}
+
+		return nil
+	}()
 }
 
 func (w worker) GetStatus() string {
@@ -46,8 +69,5 @@ func newWorker(resource enum.Resource) *worker {
 	return &worker{
 		Resource: resource,
 		Status:   enum.DisableStatus,
-		CallBack: func() error {
-			return nil
-		},
 	}
 }
