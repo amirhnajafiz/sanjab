@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/amirhnajafiz/sanjab/internal/config"
+	internal "github.com/amirhnajafiz/sanjab/internal/http"
 	"github.com/amirhnajafiz/sanjab/internal/worker"
 
 	"k8s.io/client-go/kubernetes"
@@ -38,5 +40,16 @@ func main() {
 		}(item)
 	}
 
-	// register http server
+	// create a handler
+	h := internal.Handler{
+		Workers: workers,
+	}
+
+	http.HandleFunc("/", h.Index)
+	http.HandleFunc("/health", h.Health)
+
+	// start http server
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", configs.Port), nil); err != nil {
+		panic(err)
+	}
 }
