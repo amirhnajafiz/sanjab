@@ -2,20 +2,20 @@ package worker
 
 import "github.com/amirhnajafiz/sanjab/pkg/enum"
 
-type worker struct {
-	CallBack func() error
-	Status   enum.Status
-	Resource enum.Resource
+func newPodResource() *worker {
+	w := &worker{
+		Status:   enum.PendingStatus,
+		Resource: enum.PodResource,
+	}
+
+	return w
 }
 
-func (w worker) Watch() error {
-	return w.CallBack()
-}
+func newDeploymentResource() *worker {
+	w := &worker{
+		Status:   enum.PendingStatus,
+		Resource: enum.DeploymentResource,
+	}
 
-func (w worker) GetStatus() string {
-	return w.Status.ToString()
-}
-
-func (w worker) GetResource() string {
-	return w.Resource.ToString()
+	return w
 }
