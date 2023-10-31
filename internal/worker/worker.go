@@ -12,8 +12,11 @@ type Worker interface {
 }
 
 // Register system workers
-func Register() []Worker {
+func Register(cfg Config) []Worker {
 	var workers []Worker
+
+	workers = append(workers, newPodResource(cfg))
+	workers = append(workers, newDeploymentResource(cfg))
 
 	return workers
 }
@@ -34,4 +37,14 @@ func (w worker) GetStatus() string {
 
 func (w worker) GetResource() string {
 	return w.Resource.ToString()
+}
+
+func newWorker(resource enum.Resource) *worker {
+	return &worker{
+		Resource: resource,
+		Status:   enum.PendingStatus,
+		CallBack: func() error {
+			return nil
+		},
+	}
 }
