@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/amirhnajafiz/sanjab/internal/config"
 	"github.com/amirhnajafiz/sanjab/internal/worker"
@@ -13,15 +12,15 @@ import (
 )
 
 func main() {
-	// cluster client configs
-	cfg, _ := clientcmd.BuildConfigFromFlags("", os.Getenv("KUBECONFIG"))
-	clientSet, _ := kubernetes.NewForConfig(cfg)
-
 	// load service configs
 	configs := config.Load()
 
+	// cluster client configs
+	cfg, _ := clientcmd.BuildConfigFromFlags("", configs.KubeConfig)
+	clientSet, _ := kubernetes.NewForConfig(cfg)
+
 	// create workers
-	workers := worker.Register(clientSet, configs)
+	workers := worker.Register(clientSet, worker.Config{Resources: configs.Resources})
 
 	// start workers
 	for _, item := range workers {

@@ -1,7 +1,10 @@
 package config
 
-import "github.com/amirhnajafiz/sanjab/internal/worker"
-
-func Default() worker.Config {
-	return worker.Config{}
+func Default() Config {
+	return Config{
+		Resources:  []string{},
+		Namespace:  "",
+		KubeConfig: "",
+		Timeout:    10,
+	}
 }

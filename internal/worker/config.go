@@ -3,7 +3,7 @@ package worker
 import "github.com/amirhnajafiz/sanjab/pkg/enum"
 
 type Config struct {
-	Resources []string `koanf:"resources"`
+	Resources []string
 }
 
 func (c Config) Has(resource enum.Resource) bool {

@@ -1,7 +1,12 @@
 package config
 
-import "github.com/amirhnajafiz/sanjab/internal/worker"
+type Config struct {
+	Resources  []string `koanf:"resources"`
+	KubeConfig string   `koanf:"kube_config"`
+	Namespace  string   `koanf:"namespace"`
+	Timeout    int      `koanf:"timeout"`
+}
 
-func Load() worker.Config {
+func Load() Config {
 	return Default()
 }
