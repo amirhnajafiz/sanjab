@@ -15,7 +15,6 @@ const (
 	StatefulResource       Resource = "statefulsets"
 	HPAResource            Resource = "hpas"
 	IngressResource        Resource = "ingress"
-	PVResource             Resource = "pvs"
 	PVCResource            Resource = "pvcs"
 )
 
