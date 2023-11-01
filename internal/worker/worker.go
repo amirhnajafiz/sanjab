@@ -22,18 +22,24 @@ type Worker interface {
 
 // Register system workers
 func Register(cfg Config) []Worker {
-	var workers []Worker
-
 	// create a new master
 	m := master{
 		Cfg: cfg,
 	}
 
-	// add workers
-	workers = append(workers, m.newPodResource())
-	workers = append(workers, m.newDeploymentResource())
-
-	return workers
+	return []Worker{
+		m.newPodResource(),
+		m.newDeploymentResource(),
+		m.newServiceResource(),
+		m.newCronjobResource(),
+		m.newConfigmapResource(),
+		m.newSecretResource(),
+		m.newServiceAccountResource(),
+		m.newStatefulResource(),
+		m.newHPAResource(),
+		m.newIngressResource(),
+		m.newPVCResource(),
+	}
 }
 
 // each worker calls a watcher function to monitor resources
