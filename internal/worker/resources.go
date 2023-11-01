@@ -15,9 +15,8 @@ func (w worker) newPodResource() *worker {
 	if w.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			timeOut := int64(60)
-
-			return w.Cfg.Client.CoreV1().Pods("").Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			timeOut := int64(w.Cfg.Timeout)
+			return w.Cfg.Client.CoreV1().Pods(w.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 	}
 
@@ -30,9 +29,8 @@ func (w worker) newDeploymentResource() *worker {
 	if w.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			timeOut := int64(60)
-
-			return w.Cfg.Client.AppsV1().Deployments("").Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			timeOut := int64(w.Cfg.Timeout)
+			return w.Cfg.Client.AppsV1().Deployments(w.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 	}
 
