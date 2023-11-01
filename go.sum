@@ -1,3 +1,5 @@
+github.com/ceph/go-ceph v0.24.0 h1:ab1pQCTiNrwjJJJ3bebwQM9tjDQ4tXGKfXAZBNdFiYI=
+github.com/ceph/go-ceph v0.24.0/go.mod h1:gdL5+ewDeHcbV4ZsfD3EH3na35trT07YaTVD1hhJWEg=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
