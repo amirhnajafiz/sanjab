@@ -24,24 +24,29 @@ type Worker interface {
 func Register(cfg Config) []Worker {
 	var workers []Worker
 
+	// create a new master
 	m := master{
 		Cfg: cfg,
 	}
 
+	// add workers
 	workers = append(workers, m.newPodResource())
 	workers = append(workers, m.newDeploymentResource())
 
 	return workers
 }
 
+// each worker calls a watcher function to monitor resources
 type worker struct {
 	WatcherFunc func(options v1.ListOptions) (watch.Interface, error)
 	Status      enum.Status
 	Resource    enum.Resource
 }
 
+// Watch a resource
 func (w worker) Watch() error {
 	return func() error {
+		// disabled worker
 		if w.Status == enum.DisableStatus {
 			return nil
 		}
@@ -59,10 +64,12 @@ func (w worker) Watch() error {
 	}()
 }
 
+// GetStatus of a worker
 func (w worker) GetStatus() string {
 	return w.Status.ToString()
 }
 
+// GetResource name of a worker
 func (w worker) GetResource() string {
 	return w.Resource.ToString()
 }
