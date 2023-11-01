@@ -10,7 +10,7 @@ import (
 	"github.com/amirhnajafiz/sanjab/internal/worker"
 
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/rest"
 )
 
 func main() {
@@ -18,7 +18,11 @@ func main() {
 	configs := config.Load()
 
 	// cluster client configs
-	cfg, _ := clientcmd.BuildConfigFromFlags("", configs.KubeConfig)
+	cfg, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err)
+	}
+
 	clientSet, _ := kubernetes.NewForConfig(cfg)
 
 	// create workers
