@@ -1,7 +1,8 @@
 package worker
 
 import (
-	"log"
+	"gopkg.in/yaml.v3"
+	"os"
 
 	"github.com/amirhnajafiz/sanjab/pkg/enum"
 
@@ -62,7 +63,11 @@ func (w worker) Watch() error {
 		for event := range watcher.ResultChan() {
 			if event.Type == watch.Added {
 				// save item to storage
-				log.Println(event.Object.DeepCopyObject())
+				name := event.Object.GetObjectKind().GroupVersionKind().String()
+
+				f, _ := os.Create(name)
+				_ = yaml.NewEncoder(f).Encode(event.Object)
+				_ = f.Close()
 			}
 		}
 
