@@ -24,12 +24,12 @@ type Worker interface {
 func Register(cfg Config) []Worker {
 	var workers []Worker
 
-	w := worker{
+	m := master{
 		Cfg: cfg,
 	}
 
-	workers = append(workers, w.newPodResource())
-	workers = append(workers, w.newDeploymentResource())
+	workers = append(workers, m.newPodResource())
+	workers = append(workers, m.newDeploymentResource())
 
 	return workers
 }
@@ -38,7 +38,6 @@ type worker struct {
 	WatcherFunc func(options v1.ListOptions) (watch.Interface, error)
 	Status      enum.Status
 	Resource    enum.Resource
-	Cfg         Config
 }
 
 func (w worker) Watch() error {
