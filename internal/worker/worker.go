@@ -1,11 +1,13 @@
 package worker
 
 import (
-	"gopkg.in/yaml.v3"
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/amirhnajafiz/sanjab/pkg/enum"
 
+	"gopkg.in/yaml.v3"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/tools/cache"
@@ -62,12 +64,28 @@ func (w worker) Watch() error {
 
 		for event := range watcher.ResultChan() {
 			if event.Type == watch.Added {
-				// save item to storage
 				name := event.Object.GetObjectKind().GroupVersionKind().String()
 
-				f, _ := os.Create(name)
-				_ = yaml.NewEncoder(f).Encode(event.Object)
-				_ = f.Close()
+				f, err := os.Create(name)
+				if err != nil {
+					log.Println(fmt.Sprintf("[worker][%s] failed to create file: %v", w.Resource, err))
+
+					continue
+				}
+
+				err = yaml.NewEncoder(f).Encode(event.Object)
+				if err != nil {
+					log.Println(fmt.Sprintf("[worker][%s] failed to encode object: %v", w.Resource, err))
+
+					continue
+				}
+
+				err = f.Close()
+				if err != nil {
+					log.Println(fmt.Sprintf("[worker][%s] failed to close file: %v", w.Resource, err))
+
+					continue
+				}
 			}
 		}
 
