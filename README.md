@@ -16,3 +16,4 @@ as a yaml file on Ceph cluster.
 - StatefulSets
 - HPAs
 - Ingress
+- PVCs
