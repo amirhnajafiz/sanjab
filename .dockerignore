@@ -1,0 +1,6 @@
+build/
+.gitignore
+.git
+config.example.yml
+README.md
+.idea
