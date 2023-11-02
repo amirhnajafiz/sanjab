@@ -48,6 +48,7 @@ func Register(cfg Config) []Worker {
 // each worker calls a watcher function to monitor resources
 type worker struct {
 	WatcherFunc func(options v1.ListOptions) (watch.Interface, error)
+	CallBack    func(event watch.Event) error
 	Status      enum.Status
 	Resource    enum.Resource
 }
