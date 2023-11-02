@@ -8,6 +8,7 @@ import (
 
 	"github.com/amirhnajafiz/sanjab/internal/config"
 	internal "github.com/amirhnajafiz/sanjab/internal/http"
+	"github.com/amirhnajafiz/sanjab/internal/storage"
 	"github.com/amirhnajafiz/sanjab/internal/worker"
 
 	"k8s.io/client-go/kubernetes"
@@ -26,9 +27,16 @@ func main() {
 
 	clientSet, _ := kubernetes.NewForConfig(cfg)
 
+	// open storage connection
+	stg, err := storage.NewConnection(configs.Storage)
+	if err != nil {
+		panic(err)
+	}
+
 	// create workers
 	workers := worker.Register(
 		worker.Config{
+			Storage:   stg,
 			Client:    clientSet,
 			Timeout:   configs.Timeout,
 			Namespace: configs.Namespace,
