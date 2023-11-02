@@ -1,0 +1,20 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: sanjab-rbac
+rules:
+  - apiGroups: [""] # "" indicates the core API group
+    resources:
+      - "pods"
+      - "deployments"
+      - "services"
+      - "cronjobs"
+      - "configmaps"
+      - "secrets"
+      - "serviceaccounts"
+      - "statefulsets"
+      - "hpas"
+      - "ingresses"
+      - "pvcs"
+    verbs: ["get", "watch", "list"]
