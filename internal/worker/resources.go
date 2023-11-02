@@ -35,6 +35,18 @@ func (m master) createLocalFile(obj runtime.Object, name string) error {
 	return nil
 }
 
+func (m master) exportYaml(obj runtime.Object, name string, path string) error {
+	if err := m.createLocalFile(obj, path); err != nil {
+		return fmt.Errorf("failed to create local file: %v", err)
+	}
+
+	if err := m.Cfg.Storage.Upload(name, path); err != nil {
+		return fmt.Errorf("failed to upload file: %v", err)
+	}
+
+	return nil
+}
+
 func (m master) newPodResource() *worker {
 	wo := newWorker(enum.PodResource)
 
@@ -42,22 +54,14 @@ func (m master) newPodResource() *worker {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
 			timeOut := int64(m.Cfg.Timeout)
+
 			return m.Cfg.Client.CoreV1().Pods(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.Pod)
-
 			path := fmt.Sprintf("%s.yaml", obj.GetName())
 
-			if err := m.createLocalFile(obj, path); err != nil {
-				return fmt.Errorf("[worker][%s] failed to create local file: %v", wo.Resource, err)
-			}
-
-			if err := m.Cfg.Storage.Upload(obj.GetName(), path); err != nil {
-				return fmt.Errorf("[worker][%s] failed to upload file: %v", wo.Resource, err)
-			}
-
-			return nil
+			return m.exportYaml(obj, obj.GetName(), path)
 		}
 	}
 
