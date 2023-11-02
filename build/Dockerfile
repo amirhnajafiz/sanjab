@@ -1,4 +1,6 @@
-FROM go:1.20-alpine
+FROM go:1.20-alpine as builder
+
+WORKDIR /app
 
 COPY go.mod go.sum ./
 
@@ -7,5 +9,11 @@ RUN go mod download
 COPY . .
 
 RUN go build -o main
+
+FROM bullseye
+
+WORKDIR /app
+
+COPY --from=builder ./main .
 
 CMD ./main
