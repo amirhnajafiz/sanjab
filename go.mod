@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/ceph/go-ceph v0.24.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
