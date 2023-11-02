@@ -14,10 +14,12 @@ import (
 	"k8s.io/apimachinery/pkg/watch"
 )
 
+// master manages the workers of each resource
 type master struct {
 	Cfg Config
 }
 
+// create a yaml file from our object
 func (m master) createLocalFile(obj runtime.Object, name string) error {
 	f, err := os.Create(name)
 	if err != nil {
@@ -35,6 +37,7 @@ func (m master) createLocalFile(obj runtime.Object, name string) error {
 	return nil
 }
 
+// export yaml file into ceph cluster
 func (m master) exportYaml(obj runtime.Object, name string, path string) error {
 	if err := m.createLocalFile(obj, path); err != nil {
 		return fmt.Errorf("failed to create local file: %v", err)
@@ -46,6 +49,8 @@ func (m master) exportYaml(obj runtime.Object, name string, path string) error {
 
 	return nil
 }
+
+// ------------ resource methods -------------
 
 func (m master) newPodResource() *worker {
 	wo := newWorker(enum.PodResource)
