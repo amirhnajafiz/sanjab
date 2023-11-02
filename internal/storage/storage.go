@@ -1,44 +1,40 @@
 package storage
 
 import (
-	"fmt"
+	"log"
 
-	"github.com/ceph/go-ceph/rados"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 type Storage struct {
-	conn   *rados.Conn
-	ioConn *rados.IOContext
+	conn *s3.S3
 }
 
-// NewConnection returns a rados connection
+// NewConnection returns a ceph connection
 func NewConnection(confFile, pool string) (*Storage, error) {
-	// create a connection to the Ceph cluster
-	conn, err := rados.NewConn()
-	if err != nil {
-		return nil, fmt.Errorf("failed to create connection: %v", err)
-	}
+	// Set your Ceph Object Gateway (S3) endpoint, access key, and secret key
+	endpoint := "http://your-ceph-rgw-endpoint:port"
+	accessKey := "your-access-key"
+	secretKey := "your-secret-key"
 
-	// read the Ceph configuration from a file or provide it programmatically
-	err = conn.ReadConfigFile(confFile)
+	// Create an AWS session with static credentials
+	sess, err := session.NewSession(&aws.Config{
+		Endpoint:         aws.String(endpoint),
+		Credentials:      credentials.NewStaticCredentials(accessKey, secretKey, ""),
+		S3ForcePathStyle: aws.Bool(true),
+	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to read Ceph config file: %v", err)
-	}
-
-	// initialize the connection
-	err = conn.Connect()
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to the Ceph cluster: %v", err)
-	}
-
-	// open pool
-	ioConn, err := conn.OpenIOContext(pool)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open pool connection: %v", err)
+		log.Fatalf("Failed to create session: %v", err)
 	}
 
 	return &Storage{
-		conn:   conn,
-		ioConn: ioConn,
+		conn: s3.New(sess),
 	}, nil
+}
+
+func (s Storage) Upload() error {
+
 }
