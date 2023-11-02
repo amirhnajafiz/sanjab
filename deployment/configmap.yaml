@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sanjab-config
+data:
+  config.yaml: |
+    timeout: 60 # in seconds
+    port: 8080
+    namespace: "default"
+    ceph:
+      host: "http://127.0.0.1:6800"
+      access: "access-token"
+      secret: "secret-token"
+      bucket: "bucket-name"
+    resources:
+      - pods
+      - deployments
+      - services
+      - cronjobs
+      - configmaps
+      - secrets
+      - serviceaccounts
+      - statefulsets
+      - hpas
+      - ingresses
+      - pvcs
