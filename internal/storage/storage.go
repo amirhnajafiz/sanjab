@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -40,7 +41,13 @@ func (s Storage) Upload(name, path string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open local file: %v", err)
 	}
-	defer localFile.Close()
+	defer func() {
+		_ = localFile.Close()
+
+		if er := os.Remove(path); er != nil {
+			log.Println(fmt.Errorf("failed to remove file %s: %v", path, err))
+		}
+	}()
 
 	// upload the file to the S3 bucket
 	_, err = s.conn.PutObject(&s3.PutObjectInput{
@@ -49,7 +56,7 @@ func (s Storage) Upload(name, path string) error {
 		Body:   localFile,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to upload file to S3: %v", err)
+		return fmt.Errorf("failed to upload file to Ceph: %v", err)
 	}
 
 	return nil
