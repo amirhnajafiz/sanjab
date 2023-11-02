@@ -15,6 +15,14 @@ spec:
       env:
         - name: SJ_CONFIG_PATH
           value: config.yaml
+      readinessProbe:
+        httpGet:
+          port: 80
+          path: /
+      livenessProbe:
+        httpGet:
+          port: 80
+          path: /health
   serviceAccountName: sanjab
   volumes:
     - name: config
