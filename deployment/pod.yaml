@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sanjab-pod
+  labels:
+    app: sanjab
+spec:
+  containers:
+    - name: sanjab-container
+      image: amirhossein21/sanjab:v0.0.1
+      volumeMounts:
+        - mountPath: /app/config.yaml
+          subPath: config.yaml
+          name: config
+      env:
+        - name: SJ_CONFIG_PATH
+          value: config.yaml
+  serviceAccountName: sanjab
+  volumes:
+    - name: config
+      configMap:
+        name: sanjab-config
