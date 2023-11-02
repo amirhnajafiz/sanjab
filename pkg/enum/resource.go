@@ -14,7 +14,7 @@ const (
 	ServiceAccountResource Resource = "serviceaccounts"
 	StatefulResource       Resource = "statefulsets"
 	HPAResource            Resource = "hpas"
-	IngressResource        Resource = "ingress"
+	IngressResource        Resource = "ingresses"
 	PVCResource            Resource = "pvcs"
 )
 

@@ -11,5 +11,5 @@ resources:
   - serviceaccounts
   - statefulsets
   - hpas
-  - ingress
+  - ingresses
   - pvcs
