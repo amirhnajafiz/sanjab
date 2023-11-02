@@ -6,8 +6,13 @@ import (
 	"github.com/ceph/go-ceph/rados"
 )
 
+type Storage struct {
+	conn   *rados.Conn
+	ioConn *rados.IOContext
+}
+
 // NewConnection returns a rados connection
-func NewConnection(confFile string) (*rados.Conn, error) {
+func NewConnection(confFile, pool string) (*Storage, error) {
 	// create a connection to the Ceph cluster
 	conn, err := rados.NewConn()
 	if err != nil {
@@ -23,8 +28,17 @@ func NewConnection(confFile string) (*rados.Conn, error) {
 	// initialize the connection
 	err = conn.Connect()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to connect to the Ceph cluster: %v", err)
+		return nil, fmt.Errorf("failed to connect to the Ceph cluster: %v", err)
 	}
 
-	return conn, nil
+	// open pool
+	ioConn, err := conn.OpenIOContext(pool)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open pool connection: %v", err)
+	}
+
+	return &Storage{
+		conn:   conn,
+		ioConn: ioConn,
+	}, nil
 }
