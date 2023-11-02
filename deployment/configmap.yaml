@@ -5,7 +5,7 @@ metadata:
 data:
   config.yaml: |
     timeout: 60 # in seconds
-    port: 8080
+    port: 80
     namespace: "default"
     ceph:
       host: "http://127.0.0.1:6800"
