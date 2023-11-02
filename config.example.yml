@@ -1,0 +1,15 @@
+timeout: 60 # in seconds
+port: 8080
+namespace: "default"
+resources:
+  - pods
+  - deployments
+  - services
+  - cronjobs
+  - configmaps
+  - secrets
+  - serviceaccounts
+  - statefulsets
+  - hpas
+  - ingress
+  - pvcs
