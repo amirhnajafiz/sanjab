@@ -2,9 +2,9 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   namespace: default
-  name: sanjab-rbac
+  name: sanjab-role
 rules:
-  - apiGroups: [""] # "" indicates the core API group
+  - apiGroups: ["*"]
     resources:
       - "pods"
       - "deployments"
@@ -18,3 +18,17 @@ rules:
       - "ingresses"
       - "pvcs"
     verbs: ["get", "watch", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: sanjab-role-binding
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: sanjab
+    namespace: default
+roleRef:
+  kind: Role
+  name: sanjab-role
+  apiGroup: rbac.authorization.k8s.io
