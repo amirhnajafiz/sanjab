@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/amirhnajafiz/sanjab/internal/config"
 	internal "github.com/amirhnajafiz/sanjab/internal/http"
@@ -15,7 +16,7 @@ import (
 
 func main() {
 	// load service configs
-	configs := config.Load()
+	configs := config.Load(os.Getenv("SJ_CONFIG_PATH"))
 
 	// cluster client configs
 	cfg, err := rest.InClusterConfig()

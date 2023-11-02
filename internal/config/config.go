@@ -18,7 +18,7 @@ type Config struct {
 	Namespace string   `koanf:"namespace"`
 }
 
-func Load() Config {
+func Load(path string) Config {
 	var instance Config
 
 	k := koanf.New(".")
@@ -29,7 +29,7 @@ func Load() Config {
 	}
 
 	// load configuration from file
-	if err := k.Load(file.Provider("config.yml"), yaml.Parser()); err != nil {
+	if err := k.Load(file.Provider(path), yaml.Parser()); err != nil {
 		log.Printf("error loading config.yml: %s", err)
 	}
 
