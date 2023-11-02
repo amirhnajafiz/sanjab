@@ -2,15 +2,37 @@ package worker
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	"github.com/amirhnajafiz/sanjab/pkg/enum"
 
+	"gopkg.in/yaml.v3"
+	v12 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 )
 
 type master struct {
 	Cfg Config
+}
+
+func (m master) createLocalFile(obj runtime.Object, name string) error {
+	f, err := os.Create(name)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %v", err)
+	}
+
+	if err = yaml.NewEncoder(f).Encode(obj); err != nil {
+		return fmt.Errorf("failed to encode object: %v", err)
+	}
+
+	if err = f.Close(); err != nil {
+		return fmt.Errorf("failed to close file: %v", err)
+	}
+
+	return nil
 }
 
 func (m master) newPodResource() *worker {
@@ -21,6 +43,21 @@ func (m master) newPodResource() *worker {
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
 			timeOut := int64(m.Cfg.Timeout)
 			return m.Cfg.Client.CoreV1().Pods(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+		}
+		wo.CallBack = func(event watch.Event) error {
+			obj := event.Object.(*v12.Pod)
+
+			path := fmt.Sprintf("%s.yaml", obj.GetName())
+
+			if err := m.createLocalFile(obj, path); err != nil {
+				return fmt.Errorf("[worker][%s] failed to create local file: %v", wo.Resource, err)
+			}
+
+			if err := m.Cfg.Storage.Upload(obj.GetName(), path); err != nil {
+				return fmt.Errorf("[worker][%s] failed to upload file: %v", wo.Resource, err)
+			}
+
+			return nil
 		}
 	}
 
