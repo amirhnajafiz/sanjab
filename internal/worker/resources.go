@@ -8,7 +8,11 @@ import (
 	"github.com/amirhnajafiz/sanjab/pkg/enum"
 
 	"gopkg.in/yaml.v3"
+	v13 "k8s.io/api/apps/v1"
+	v14 "k8s.io/api/autoscaling/v1"
+	"k8s.io/api/batch/v1beta1"
 	v12 "k8s.io/api/core/v1"
+	v15 "k8s.io/api/networking/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
@@ -82,6 +86,12 @@ func (m master) newDeploymentResource() *worker {
 			timeOut := int64(m.Cfg.Timeout)
 			return m.Cfg.Client.AppsV1().Deployments(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
+		wo.CallBack = func(event watch.Event) error {
+			obj := event.Object.(*v13.Deployment)
+			path := fmt.Sprintf("%s.yaml", obj.GetName())
+
+			return m.exportYaml(obj, obj.GetName(), path)
+		}
 	}
 
 	return wo
@@ -95,6 +105,12 @@ func (m master) newServiceResource() *worker {
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
 			timeOut := int64(m.Cfg.Timeout)
 			return m.Cfg.Client.CoreV1().Services(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+		}
+		wo.CallBack = func(event watch.Event) error {
+			obj := event.Object.(*v12.Service)
+			path := fmt.Sprintf("%s.yaml", obj.GetName())
+
+			return m.exportYaml(obj, obj.GetName(), path)
 		}
 	}
 
@@ -110,6 +126,12 @@ func (m master) newCronjobResource() *worker {
 			timeOut := int64(m.Cfg.Timeout)
 			return m.Cfg.Client.BatchV1().CronJobs(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
+		wo.CallBack = func(event watch.Event) error {
+			obj := event.Object.(*v1beta1.CronJob)
+			path := fmt.Sprintf("%s.yaml", obj.GetName())
+
+			return m.exportYaml(obj, obj.GetName(), path)
+		}
 	}
 
 	return wo
@@ -123,6 +145,12 @@ func (m master) newConfigmapResource() *worker {
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
 			timeOut := int64(m.Cfg.Timeout)
 			return m.Cfg.Client.CoreV1().ConfigMaps(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+		}
+		wo.CallBack = func(event watch.Event) error {
+			obj := event.Object.(*v12.ConfigMap)
+			path := fmt.Sprintf("%s.yaml", obj.GetName())
+
+			return m.exportYaml(obj, obj.GetName(), path)
 		}
 	}
 
@@ -138,6 +166,12 @@ func (m master) newSecretResource() *worker {
 			timeOut := int64(m.Cfg.Timeout)
 			return m.Cfg.Client.CoreV1().Secrets(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
+		wo.CallBack = func(event watch.Event) error {
+			obj := event.Object.(*v12.Secret)
+			path := fmt.Sprintf("%s.yaml", obj.GetName())
+
+			return m.exportYaml(obj, obj.GetName(), path)
+		}
 	}
 
 	return wo
@@ -151,6 +185,12 @@ func (m master) newServiceAccountResource() *worker {
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
 			timeOut := int64(m.Cfg.Timeout)
 			return m.Cfg.Client.CoreV1().ServiceAccounts(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+		}
+		wo.CallBack = func(event watch.Event) error {
+			obj := event.Object.(*v12.ServiceAccount)
+			path := fmt.Sprintf("%s.yaml", obj.GetName())
+
+			return m.exportYaml(obj, obj.GetName(), path)
 		}
 	}
 
@@ -166,6 +206,12 @@ func (m master) newStatefulResource() *worker {
 			timeOut := int64(m.Cfg.Timeout)
 			return m.Cfg.Client.AppsV1().StatefulSets(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
+		wo.CallBack = func(event watch.Event) error {
+			obj := event.Object.(*v13.StatefulSet)
+			path := fmt.Sprintf("%s.yaml", obj.GetName())
+
+			return m.exportYaml(obj, obj.GetName(), path)
+		}
 	}
 
 	return wo
@@ -179,6 +225,12 @@ func (m master) newHPAResource() *worker {
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
 			timeOut := int64(m.Cfg.Timeout)
 			return m.Cfg.Client.AutoscalingV1().HorizontalPodAutoscalers(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+		}
+		wo.CallBack = func(event watch.Event) error {
+			obj := event.Object.(*v14.HorizontalPodAutoscaler)
+			path := fmt.Sprintf("%s.yaml", obj.GetName())
+
+			return m.exportYaml(obj, obj.GetName(), path)
 		}
 	}
 
@@ -194,6 +246,12 @@ func (m master) newIngressResource() *worker {
 			timeOut := int64(m.Cfg.Timeout)
 			return m.Cfg.Client.NetworkingV1().Ingresses(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
+		wo.CallBack = func(event watch.Event) error {
+			obj := event.Object.(*v15.Ingress)
+			path := fmt.Sprintf("%s.yaml", obj.GetName())
+
+			return m.exportYaml(obj, obj.GetName(), path)
+		}
 	}
 
 	return wo
@@ -207,6 +265,12 @@ func (m master) newPVCResource() *worker {
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
 			timeOut := int64(m.Cfg.Timeout)
 			return m.Cfg.Client.CoreV1().PersistentVolumeClaims(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+		}
+		wo.CallBack = func(event watch.Event) error {
+			obj := event.Object.(*v12.PersistentVolumeClaim)
+			path := fmt.Sprintf("%s.yaml", obj.GetName())
+
+			return m.exportYaml(obj, obj.GetName(), path)
 		}
 	}
 
