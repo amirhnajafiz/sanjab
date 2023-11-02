@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/amirhnajafiz/sanjab/internal/storage"
+
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
@@ -12,10 +14,11 @@ import (
 )
 
 type Config struct {
-	Resources []string `koanf:"resources"`
-	Timeout   int      `koanf:"timeout"`
-	Port      int      `koanf:"port"`
-	Namespace string   `koanf:"namespace"`
+	Storage   storage.Config `koanf:"ceph"`
+	Resources []string       `koanf:"resources"`
+	Timeout   int            `koanf:"timeout"`
+	Port      int            `koanf:"port"`
+	Namespace string         `koanf:"namespace"`
 }
 
 func Load(path string) Config {
