@@ -1,6 +1,7 @@
 timeout: 60 # in seconds
 port: 8080
 namespace: "default"
+ceph_disable: false
 ceph:
   host: "http://127.0.0.1:6800"
   access: "access-token"
