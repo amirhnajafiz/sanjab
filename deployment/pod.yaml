@@ -11,6 +11,8 @@ spec:
       ports:
         - containerPort: 80
       volumeMounts:
+        - mountPath: /app/local/tmp
+          name: local
         - mountPath: /app/config.yaml
           subPath: config.yaml
           name: config
@@ -30,3 +32,6 @@ spec:
     - name: config
       configMap:
         name: sanjab-config
+    - name: local
+      emptyDir:
+        sizeLimit: 500Mi
