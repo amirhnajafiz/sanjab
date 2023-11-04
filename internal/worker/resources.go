@@ -18,6 +18,10 @@ import (
 	"k8s.io/apimachinery/pkg/watch"
 )
 
+const (
+	LOCAL_DIR = "./local/tmp"
+)
+
 // master manages the workers of each resource
 type master struct {
 	Cfg         Config
@@ -25,8 +29,8 @@ type master struct {
 }
 
 // create a yaml file from our object
-func (m master) createLocalFile(obj runtime.Object, name string) error {
-	f, err := os.Create(name)
+func (m master) createLocalFile(obj runtime.Object, path string) error {
+	f, err := os.Create(path)
 	if err != nil {
 		return fmt.Errorf("failed to create file: %v", err)
 	}
@@ -71,9 +75,10 @@ func (m master) newPodResource() *worker {
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.Pod)
-			path := fmt.Sprintf("%s.yaml", obj.GetName())
+			name := obj.GetName()
+			path := fmt.Sprintf("%s/%s.yaml", LOCAL_DIR, name)
 
-			return m.exportYaml(obj, obj.GetName(), path)
+			return m.exportYaml(obj, name, path)
 		}
 	}
 
