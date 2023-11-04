@@ -1,5 +1,9 @@
 # Sanjab
 
+![GitHub release (with filter)](https://img.shields.io/github/v/release/amirhnajafiz/sanjab)
+![GitHub top language](https://img.shields.io/github/languages/top/amirhnajafiz/sanjab)
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/amirhnajafiz/sanjab/image.yaml)
+
 Sanjab (aka squirrel is english) is a service for backing up your k8s objects into Ceph cluster. Whenever a new request is
 sent to api-server, sanjab gets the kubernetes object of that request and stores it Ceph cluster.
 
@@ -44,3 +48,25 @@ resources:
   - pods
   - deployments
 ```
+
+## deployment
+
+To deploy Sanjab on a kubernetes cluster, review deployment manifests. You need to deploy
+all of those files, especially ```rbac``` and ```service account```. Sanjab needs access
+to all api groups in order to get, list, and watch those resources.
+
+### docker image
+
+````shell
+docker pull amirhossein21/sanjab:latest
+````
+
+## monitor
+
+If you want to check Sanjab health and workers status, make the following http
+requests.
+
+````shell
+curl -i -X GET localhost       # workers status
+curl -i -X GET localhost/index # service health
+````
