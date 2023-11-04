@@ -20,7 +20,8 @@ import (
 
 // master manages the workers of each resource
 type master struct {
-	Cfg Config
+	Cfg         Config
+	CephDisable bool
 }
 
 // create a yaml file from our object
@@ -47,8 +48,10 @@ func (m master) exportYaml(obj runtime.Object, name string, path string) error {
 		return fmt.Errorf("failed to create local file: %v", err)
 	}
 
-	if err := m.Cfg.Storage.Upload(name, path); err != nil {
-		return fmt.Errorf("failed to upload file: %v", err)
+	if !m.CephDisable {
+		if err := m.Cfg.Storage.Upload(name, path); err != nil {
+			return fmt.Errorf("failed to upload file: %v", err)
+		}
 	}
 
 	return nil
