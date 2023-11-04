@@ -8,6 +8,8 @@ spec:
   containers:
     - name: sanjab-container
       image: amirhossein21/sanjab:v0.0.1
+      ports:
+        - containerPort: 80
       volumeMounts:
         - mountPath: /app/config.yaml
           subPath: config.yaml
