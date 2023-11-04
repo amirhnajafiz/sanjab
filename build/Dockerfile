@@ -10,10 +10,10 @@ COPY . .
 
 RUN go build -o main
 
-FROM bullseye
+FROM slim
 
 WORKDIR /app
 
-COPY --from=builder ./main .
+COPY --from=builder /main .
 
 CMD ./main
