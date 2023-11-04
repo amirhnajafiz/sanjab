@@ -1,4 +1,4 @@
-# Sanjab
+# :chipmunk: Sanjab
 
 ![GitHub release (with filter)](https://img.shields.io/github/v/release/amirhnajafiz/sanjab)
 ![GitHub top language](https://img.shields.io/github/languages/top/amirhnajafiz/sanjab)
@@ -22,7 +22,7 @@ as a yaml file on Ceph cluster.
 - Ingress
 - PVCs
 
-## configs
+## :evergreen_tree: configs
 
 For Sanjab server configs, you need to create a ```config.yml``` file. This file's structure
 is like this:
@@ -49,19 +49,19 @@ resources:
   - deployments
 ```
 
-## deployment
+## :tent: deployment
 
 To deploy Sanjab on a kubernetes cluster, review deployment manifests. You need to deploy
 all of those files, especially ```rbac``` and ```service account```. Sanjab needs access
 to all api groups in order to get, list, and watch those resources.
 
-### docker image
+### :peanuts: docker image
 
 ````shell
 docker pull amirhossein21/sanjab:latest
 ````
 
-## monitor
+## :rotating_light: monitoring
 
 If you want to check Sanjab health and workers status, make the following http
 requests.
