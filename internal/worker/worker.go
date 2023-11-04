@@ -21,10 +21,11 @@ type Worker interface {
 }
 
 // Register system workers
-func Register(cfg Config) []Worker {
+func Register(cfg Config, cephDisable bool) []Worker {
 	// create a new master
 	m := master{
-		Cfg: cfg,
+		Cfg:         cfg,
+		CephDisable: cephDisable,
 	}
 
 	return []Worker{

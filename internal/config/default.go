@@ -10,9 +10,10 @@ func Default() Config {
 			Access: "",
 			Bucket: "",
 		},
-		Resources: []string{},
-		Namespace: "",
-		Timeout:   10,
-		Port:      8080,
+		Resources:   []string{},
+		Namespace:   "",
+		Timeout:     10,
+		Port:        8080,
+		CephDisable: true,
 	}
 }

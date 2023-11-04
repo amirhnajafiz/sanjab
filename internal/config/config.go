@@ -14,11 +14,12 @@ import (
 )
 
 type Config struct {
-	Storage   storage.Config `koanf:"ceph"`
-	Resources []string       `koanf:"resources"`
-	Timeout   int            `koanf:"timeout"`
-	Port      int            `koanf:"port"`
-	Namespace string         `koanf:"namespace"`
+	Storage     storage.Config `koanf:"ceph"`
+	Resources   []string       `koanf:"resources"`
+	Timeout     int            `koanf:"timeout"`
+	Port        int            `koanf:"port"`
+	Namespace   string         `koanf:"namespace"`
+	CephDisable bool           `koanf:"ceph_disable"`
 }
 
 func Load(path string) Config {

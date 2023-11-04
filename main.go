@@ -42,6 +42,7 @@ func main() {
 			Namespace: configs.Namespace,
 			Resources: configs.Resources,
 		},
+		configs.CephDisable,
 	)
 
 	// start workers
