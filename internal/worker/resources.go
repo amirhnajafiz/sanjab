@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	LOCAL_DIR = "./local/tmp"
+	LocalDir = "./local/tmp"
 )
 
 // master manages the workers of each resource
@@ -76,7 +76,7 @@ func (m master) newPodResource() *worker {
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.Pod)
 			name := obj.GetName()
-			path := fmt.Sprintf("%s/%s.yaml", LOCAL_DIR, name)
+			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
 
 			return m.exportYaml(obj, name, path)
 		}
