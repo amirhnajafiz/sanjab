@@ -10,7 +10,7 @@ COPY . .
 
 RUN go build -o main
 
-FROM slim
+FROM scratch
 
 WORKDIR /app
 
