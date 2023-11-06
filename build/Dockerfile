@@ -1,4 +1,4 @@
-FROM go:1.20-alpine as builder
+FROM golang:1.20-alpine as builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ COPY . .
 
 RUN go build -o main
 
-FROM scratch
+FROM scratch:latest
 
 WORKDIR /app
 
