@@ -8,12 +8,12 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o main
+RUN CGO_ENABLED=0 GO111MODULE=on go build -o /main
 
 FROM scratch
 
 WORKDIR /app
 
-COPY --from=builder ./main .
+COPY --from=builder main .
 
 CMD ./main
