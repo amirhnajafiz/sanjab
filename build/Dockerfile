@@ -14,6 +14,6 @@ FROM scratch
 
 WORKDIR /app
 
-COPY --from=builder /main .
+COPY --from=builder main .
 
 CMD ./main
