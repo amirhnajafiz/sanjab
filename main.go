@@ -8,6 +8,7 @@ import (
 
 	"github.com/amirhnajafiz/sanjab/internal/config"
 	internal "github.com/amirhnajafiz/sanjab/internal/http"
+	"github.com/amirhnajafiz/sanjab/internal/metrics"
 	"github.com/amirhnajafiz/sanjab/internal/storage"
 	"github.com/amirhnajafiz/sanjab/internal/worker"
 
@@ -33,6 +34,9 @@ func main() {
 		panic(err)
 	}
 
+	// create new metrics instance
+	metricsInstance := metrics.New(len(configs.Resources))
+
 	// create workers
 	workers := worker.Register(
 		worker.Config{
@@ -42,6 +46,7 @@ func main() {
 			Namespace: configs.Namespace,
 			Resources: configs.Resources,
 		},
+		metricsInstance,
 		configs.CephDisable,
 	)
 
@@ -56,9 +61,11 @@ func main() {
 
 	// create a handler
 	h := internal.Handler{
-		Workers: workers,
+		AppMetrics: metricsInstance,
+		Workers:    workers,
 	}
 
+	http.HandleFunc("/metrics", h.Metrics)
 	http.HandleFunc("/workers", h.Worker)
 	http.HandleFunc("/health", h.Health)
 
