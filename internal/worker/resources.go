@@ -96,9 +96,10 @@ func (m master) newDeploymentResource() *worker {
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v13.Deployment)
-			path := fmt.Sprintf("%s.yaml", obj.GetName())
+			name := obj.GetName()
+			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
 
-			return m.exportYaml(obj, obj.GetName(), path)
+			return m.exportYaml(obj, name, path)
 		}
 	}
 
@@ -116,9 +117,10 @@ func (m master) newServiceResource() *worker {
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.Service)
-			path := fmt.Sprintf("%s.yaml", obj.GetName())
+			name := obj.GetName()
+			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
 
-			return m.exportYaml(obj, obj.GetName(), path)
+			return m.exportYaml(obj, name, path)
 		}
 	}
 
@@ -136,9 +138,10 @@ func (m master) newCronjobResource() *worker {
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v1beta1.CronJob)
-			path := fmt.Sprintf("%s.yaml", obj.GetName())
+			name := obj.GetName()
+			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
 
-			return m.exportYaml(obj, obj.GetName(), path)
+			return m.exportYaml(obj, name, path)
 		}
 	}
 
@@ -156,9 +159,10 @@ func (m master) newConfigmapResource() *worker {
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.ConfigMap)
-			path := fmt.Sprintf("%s.yaml", obj.GetName())
+			name := obj.GetName()
+			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
 
-			return m.exportYaml(obj, obj.GetName(), path)
+			return m.exportYaml(obj, name, path)
 		}
 	}
 
@@ -176,9 +180,10 @@ func (m master) newSecretResource() *worker {
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.Secret)
-			path := fmt.Sprintf("%s.yaml", obj.GetName())
+			name := obj.GetName()
+			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
 
-			return m.exportYaml(obj, obj.GetName(), path)
+			return m.exportYaml(obj, name, path)
 		}
 	}
 
@@ -196,9 +201,10 @@ func (m master) newServiceAccountResource() *worker {
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.ServiceAccount)
-			path := fmt.Sprintf("%s.yaml", obj.GetName())
+			name := obj.GetName()
+			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
 
-			return m.exportYaml(obj, obj.GetName(), path)
+			return m.exportYaml(obj, name, path)
 		}
 	}
 
@@ -216,9 +222,10 @@ func (m master) newStatefulResource() *worker {
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v13.StatefulSet)
-			path := fmt.Sprintf("%s.yaml", obj.GetName())
+			name := obj.GetName()
+			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
 
-			return m.exportYaml(obj, obj.GetName(), path)
+			return m.exportYaml(obj, name, path)
 		}
 	}
 
@@ -236,9 +243,10 @@ func (m master) newHPAResource() *worker {
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v14.HorizontalPodAutoscaler)
-			path := fmt.Sprintf("%s.yaml", obj.GetName())
+			name := obj.GetName()
+			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
 
-			return m.exportYaml(obj, obj.GetName(), path)
+			return m.exportYaml(obj, name, path)
 		}
 	}
 
@@ -256,9 +264,10 @@ func (m master) newIngressResource() *worker {
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v15.Ingress)
-			path := fmt.Sprintf("%s.yaml", obj.GetName())
+			name := obj.GetName()
+			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
 
-			return m.exportYaml(obj, obj.GetName(), path)
+			return m.exportYaml(obj, name, path)
 		}
 	}
 
@@ -276,9 +285,10 @@ func (m master) newPVCResource() *worker {
 		}
 		wo.CallBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.PersistentVolumeClaim)
-			path := fmt.Sprintf("%s.yaml", obj.GetName())
+			name := obj.GetName()
+			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
 
-			return m.exportYaml(obj, obj.GetName(), path)
+			return m.exportYaml(obj, name, path)
 		}
 	}
 
