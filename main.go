@@ -29,7 +29,7 @@ func main() {
 
 	// open storage connection
 	stg, err := storage.NewConnection(configs.Storage)
-	if err != nil {
+	if err != nil && !configs.CephDisable {
 		panic(err)
 	}
 
