@@ -67,6 +67,6 @@ If you want to check Sanjab health and workers status, make the following http
 requests.
 
 ````shell
-curl -i -X GET localhost       # workers status
-curl -i -X GET localhost/index # service health
+curl -i -X GET localhost        # workers status
+curl -i -X GET localhost/health # service health
 ````
