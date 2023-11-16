@@ -21,8 +21,8 @@ func (h Handler) Health(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// Index returns a status of internal workers
-func (h Handler) Index(w http.ResponseWriter, _ *http.Request) {
+// Worker returns a status of internal workers
+func (h Handler) Worker(w http.ResponseWriter, _ *http.Request) {
 	var details []detail
 
 	for _, wo := range h.Workers {

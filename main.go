@@ -59,7 +59,7 @@ func main() {
 		Workers: workers,
 	}
 
-	http.HandleFunc("/", h.Index)
+	http.HandleFunc("/workers", h.Worker)
 	http.HandleFunc("/health", h.Health)
 
 	// start http server
