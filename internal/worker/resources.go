@@ -24,9 +24,9 @@ const (
 
 // master manages the workers of each resource
 type master struct {
-	Cfg         Config
-	CephDisable bool
-	Metrics     Metrics
+	cfg         Config
+	cephDisable bool
+	metrics     Metrics
 }
 
 // create a yaml file from our object
@@ -53,8 +53,8 @@ func (m master) exportYaml(obj runtime.Object, name string, path string) error {
 		return fmt.Errorf("failed to create local file: %v", err)
 	}
 
-	if !m.CephDisable {
-		if err := m.Cfg.Storage.Upload(name, path); err != nil {
+	if !m.cephDisable {
+		if err := m.cfg.Storage.Upload(name, path); err != nil {
 			return fmt.Errorf("failed to upload file: %v", err)
 		}
 	}
@@ -67,16 +67,16 @@ func (m master) exportYaml(obj runtime.Object, name string, path string) error {
 func (m master) newPodResource() *worker {
 	wo := newWorker(enum.PodResource)
 
-	if m.Cfg.Has(wo.Resource) {
-		wo.Status = enum.PendingStatus
-		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			m.Metrics.Observe(wo.GetResource())
+	if m.cfg.Has(wo.resource) {
+		wo.status = enum.PendingStatus
+		wo.watcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.metrics.Observe(wo.GetResource())
 
-			timeOut := int64(m.Cfg.Timeout)
+			timeOut := int64(m.cfg.Timeout)
 
-			return m.Cfg.Client.CoreV1().Pods(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			return m.cfg.Client.CoreV1().Pods(m.cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
-		wo.CallBack = func(event watch.Event) error {
+		wo.callBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.Pod)
 			name := obj.GetName()
 			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
@@ -91,16 +91,16 @@ func (m master) newPodResource() *worker {
 func (m master) newDeploymentResource() *worker {
 	wo := newWorker(enum.DeploymentResource)
 
-	if m.Cfg.Has(wo.Resource) {
-		wo.Status = enum.PendingStatus
-		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			m.Metrics.Observe(wo.GetResource())
+	if m.cfg.Has(wo.resource) {
+		wo.status = enum.PendingStatus
+		wo.watcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.metrics.Observe(wo.GetResource())
 
-			timeOut := int64(m.Cfg.Timeout)
+			timeOut := int64(m.cfg.Timeout)
 
-			return m.Cfg.Client.AppsV1().Deployments(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			return m.cfg.Client.AppsV1().Deployments(m.cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
-		wo.CallBack = func(event watch.Event) error {
+		wo.callBack = func(event watch.Event) error {
 			obj := event.Object.(*v13.Deployment)
 			name := obj.GetName()
 			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
@@ -115,16 +115,16 @@ func (m master) newDeploymentResource() *worker {
 func (m master) newServiceResource() *worker {
 	wo := newWorker(enum.ServiceResource)
 
-	if m.Cfg.Has(wo.Resource) {
-		wo.Status = enum.PendingStatus
-		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			m.Metrics.Observe(wo.GetResource())
+	if m.cfg.Has(wo.resource) {
+		wo.status = enum.PendingStatus
+		wo.watcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.metrics.Observe(wo.GetResource())
 
-			timeOut := int64(m.Cfg.Timeout)
+			timeOut := int64(m.cfg.Timeout)
 
-			return m.Cfg.Client.CoreV1().Services(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			return m.cfg.Client.CoreV1().Services(m.cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
-		wo.CallBack = func(event watch.Event) error {
+		wo.callBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.Service)
 			name := obj.GetName()
 			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
@@ -139,16 +139,16 @@ func (m master) newServiceResource() *worker {
 func (m master) newCronjobResource() *worker {
 	wo := newWorker(enum.CronjobResource)
 
-	if m.Cfg.Has(wo.Resource) {
-		wo.Status = enum.PendingStatus
-		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			m.Metrics.Observe(wo.GetResource())
+	if m.cfg.Has(wo.resource) {
+		wo.status = enum.PendingStatus
+		wo.watcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.metrics.Observe(wo.GetResource())
 
-			timeOut := int64(m.Cfg.Timeout)
+			timeOut := int64(m.cfg.Timeout)
 
-			return m.Cfg.Client.BatchV1().CronJobs(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			return m.cfg.Client.BatchV1().CronJobs(m.cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
-		wo.CallBack = func(event watch.Event) error {
+		wo.callBack = func(event watch.Event) error {
 			obj := event.Object.(*v1beta1.CronJob)
 			name := obj.GetName()
 			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
@@ -163,16 +163,16 @@ func (m master) newCronjobResource() *worker {
 func (m master) newConfigmapResource() *worker {
 	wo := newWorker(enum.ConfigMapResource)
 
-	if m.Cfg.Has(wo.Resource) {
-		wo.Status = enum.PendingStatus
-		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			m.Metrics.Observe(wo.GetResource())
+	if m.cfg.Has(wo.resource) {
+		wo.status = enum.PendingStatus
+		wo.watcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.metrics.Observe(wo.GetResource())
 
-			timeOut := int64(m.Cfg.Timeout)
+			timeOut := int64(m.cfg.Timeout)
 
-			return m.Cfg.Client.CoreV1().ConfigMaps(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			return m.cfg.Client.CoreV1().ConfigMaps(m.cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
-		wo.CallBack = func(event watch.Event) error {
+		wo.callBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.ConfigMap)
 			name := obj.GetName()
 			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
@@ -187,16 +187,16 @@ func (m master) newConfigmapResource() *worker {
 func (m master) newSecretResource() *worker {
 	wo := newWorker(enum.SecretResource)
 
-	if m.Cfg.Has(wo.Resource) {
-		wo.Status = enum.PendingStatus
-		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			m.Metrics.Observe(wo.GetResource())
+	if m.cfg.Has(wo.resource) {
+		wo.status = enum.PendingStatus
+		wo.watcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.metrics.Observe(wo.GetResource())
 
-			timeOut := int64(m.Cfg.Timeout)
+			timeOut := int64(m.cfg.Timeout)
 
-			return m.Cfg.Client.CoreV1().Secrets(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			return m.cfg.Client.CoreV1().Secrets(m.cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
-		wo.CallBack = func(event watch.Event) error {
+		wo.callBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.Secret)
 			name := obj.GetName()
 			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
@@ -211,16 +211,16 @@ func (m master) newSecretResource() *worker {
 func (m master) newServiceAccountResource() *worker {
 	wo := newWorker(enum.ServiceAccountResource)
 
-	if m.Cfg.Has(wo.Resource) {
-		wo.Status = enum.PendingStatus
-		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			m.Metrics.Observe(wo.GetResource())
+	if m.cfg.Has(wo.resource) {
+		wo.status = enum.PendingStatus
+		wo.watcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.metrics.Observe(wo.GetResource())
 
-			timeOut := int64(m.Cfg.Timeout)
+			timeOut := int64(m.cfg.Timeout)
 
-			return m.Cfg.Client.CoreV1().ServiceAccounts(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			return m.cfg.Client.CoreV1().ServiceAccounts(m.cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
-		wo.CallBack = func(event watch.Event) error {
+		wo.callBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.ServiceAccount)
 			name := obj.GetName()
 			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
@@ -235,16 +235,16 @@ func (m master) newServiceAccountResource() *worker {
 func (m master) newStatefulResource() *worker {
 	wo := newWorker(enum.StatefulResource)
 
-	if m.Cfg.Has(wo.Resource) {
-		wo.Status = enum.PendingStatus
-		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			m.Metrics.Observe(wo.GetResource())
+	if m.cfg.Has(wo.resource) {
+		wo.status = enum.PendingStatus
+		wo.watcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.metrics.Observe(wo.GetResource())
 
-			timeOut := int64(m.Cfg.Timeout)
+			timeOut := int64(m.cfg.Timeout)
 
-			return m.Cfg.Client.AppsV1().StatefulSets(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			return m.cfg.Client.AppsV1().StatefulSets(m.cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
-		wo.CallBack = func(event watch.Event) error {
+		wo.callBack = func(event watch.Event) error {
 			obj := event.Object.(*v13.StatefulSet)
 			name := obj.GetName()
 			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
@@ -259,16 +259,16 @@ func (m master) newStatefulResource() *worker {
 func (m master) newHPAResource() *worker {
 	wo := newWorker(enum.HPAResource)
 
-	if m.Cfg.Has(wo.Resource) {
-		wo.Status = enum.PendingStatus
-		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			m.Metrics.Observe(wo.GetResource())
+	if m.cfg.Has(wo.resource) {
+		wo.status = enum.PendingStatus
+		wo.watcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.metrics.Observe(wo.GetResource())
 
-			timeOut := int64(m.Cfg.Timeout)
+			timeOut := int64(m.cfg.Timeout)
 
-			return m.Cfg.Client.AutoscalingV1().HorizontalPodAutoscalers(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			return m.cfg.Client.AutoscalingV1().HorizontalPodAutoscalers(m.cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
-		wo.CallBack = func(event watch.Event) error {
+		wo.callBack = func(event watch.Event) error {
 			obj := event.Object.(*v14.HorizontalPodAutoscaler)
 			name := obj.GetName()
 			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
@@ -283,16 +283,16 @@ func (m master) newHPAResource() *worker {
 func (m master) newIngressResource() *worker {
 	wo := newWorker(enum.IngressResource)
 
-	if m.Cfg.Has(wo.Resource) {
-		wo.Status = enum.PendingStatus
-		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			m.Metrics.Observe(wo.GetResource())
+	if m.cfg.Has(wo.resource) {
+		wo.status = enum.PendingStatus
+		wo.watcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.metrics.Observe(wo.GetResource())
 
-			timeOut := int64(m.Cfg.Timeout)
+			timeOut := int64(m.cfg.Timeout)
 
-			return m.Cfg.Client.NetworkingV1().Ingresses(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			return m.cfg.Client.NetworkingV1().Ingresses(m.cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
-		wo.CallBack = func(event watch.Event) error {
+		wo.callBack = func(event watch.Event) error {
 			obj := event.Object.(*v15.Ingress)
 			name := obj.GetName()
 			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)
@@ -307,16 +307,16 @@ func (m master) newIngressResource() *worker {
 func (m master) newPVCResource() *worker {
 	wo := newWorker(enum.PVCResource)
 
-	if m.Cfg.Has(wo.Resource) {
-		wo.Status = enum.PendingStatus
-		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
-			m.Metrics.Observe(wo.GetResource())
+	if m.cfg.Has(wo.resource) {
+		wo.status = enum.PendingStatus
+		wo.watcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.metrics.Observe(wo.GetResource())
 
-			timeOut := int64(m.Cfg.Timeout)
+			timeOut := int64(m.cfg.Timeout)
 
-			return m.Cfg.Client.CoreV1().PersistentVolumeClaims(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
+			return m.cfg.Client.CoreV1().PersistentVolumeClaims(m.cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
-		wo.CallBack = func(event watch.Event) error {
+		wo.callBack = func(event watch.Event) error {
 			obj := event.Object.(*v12.PersistentVolumeClaim)
 			name := obj.GetName()
 			path := fmt.Sprintf("%s/%s.yaml", LocalDir, name)

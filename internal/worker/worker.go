@@ -24,9 +24,9 @@ type Worker interface {
 func Register(cfg Config, metrics Metrics, cephDisable bool) []Worker {
 	// create a new master
 	m := master{
-		Cfg:         cfg,
-		CephDisable: cephDisable,
-		Metrics:     metrics,
+		cfg:         cfg,
+		cephDisable: cephDisable,
+		metrics:     metrics,
 	}
 
 	return []Worker{
@@ -46,25 +46,25 @@ func Register(cfg Config, metrics Metrics, cephDisable bool) []Worker {
 
 // each worker calls a watcher function to monitor resources
 type worker struct {
-	WatcherFunc func(options v1.ListOptions) (watch.Interface, error)
-	CallBack    func(event watch.Event) error
-	Status      enum.Status
-	Resource    enum.Resource
+	watcherFunc func(options v1.ListOptions) (watch.Interface, error)
+	callBack    func(event watch.Event) error
+	status      enum.Status
+	resource    enum.Resource
 }
 
 // Watch a resource
 func (w worker) Watch() error {
 	return func() error {
 		// disabled worker
-		if w.Status == enum.DisableStatus {
+		if w.status == enum.DisableStatus {
 			return nil
 		}
 
-		watcher, _ := toolsWatch.NewRetryWatcher("1", &cache.ListWatch{WatchFunc: w.WatcherFunc})
+		watcher, _ := toolsWatch.NewRetryWatcher("1", &cache.ListWatch{WatchFunc: w.watcherFunc})
 
 		for event := range watcher.ResultChan() {
 			if event.Type == watch.Added {
-				if err := w.CallBack(event); err != nil {
+				if err := w.callBack(event); err != nil {
 					log.Println(err)
 				}
 			}
@@ -76,18 +76,18 @@ func (w worker) Watch() error {
 
 // GetStatus of a worker
 func (w worker) GetStatus() string {
-	return w.Status.ToString()
+	return w.status.ToString()
 }
 
 // GetResource name of a worker
 func (w worker) GetResource() string {
-	return w.Resource.ToString()
+	return w.resource.ToString()
 }
 
 // newWorker returns a raw worker with disabled status
 func newWorker(resource enum.Resource) *worker {
 	return &worker{
-		Resource: resource,
-		Status:   enum.DisableStatus,
+		resource: resource,
+		status:   enum.DisableStatus,
 	}
 }
