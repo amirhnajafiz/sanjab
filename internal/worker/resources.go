@@ -26,6 +26,7 @@ const (
 type master struct {
 	Cfg         Config
 	CephDisable bool
+	Metrics     Metrics
 }
 
 // create a yaml file from our object
@@ -69,6 +70,8 @@ func (m master) newPodResource() *worker {
 	if m.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.Metrics.Observe(wo.GetResource())
+
 			timeOut := int64(m.Cfg.Timeout)
 
 			return m.Cfg.Client.CoreV1().Pods(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
@@ -91,7 +94,10 @@ func (m master) newDeploymentResource() *worker {
 	if m.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.Metrics.Observe(wo.GetResource())
+
 			timeOut := int64(m.Cfg.Timeout)
+
 			return m.Cfg.Client.AppsV1().Deployments(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 		wo.CallBack = func(event watch.Event) error {
@@ -112,7 +118,10 @@ func (m master) newServiceResource() *worker {
 	if m.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.Metrics.Observe(wo.GetResource())
+
 			timeOut := int64(m.Cfg.Timeout)
+
 			return m.Cfg.Client.CoreV1().Services(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 		wo.CallBack = func(event watch.Event) error {
@@ -133,7 +142,10 @@ func (m master) newCronjobResource() *worker {
 	if m.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.Metrics.Observe(wo.GetResource())
+
 			timeOut := int64(m.Cfg.Timeout)
+
 			return m.Cfg.Client.BatchV1().CronJobs(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 		wo.CallBack = func(event watch.Event) error {
@@ -154,7 +166,10 @@ func (m master) newConfigmapResource() *worker {
 	if m.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.Metrics.Observe(wo.GetResource())
+
 			timeOut := int64(m.Cfg.Timeout)
+
 			return m.Cfg.Client.CoreV1().ConfigMaps(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 		wo.CallBack = func(event watch.Event) error {
@@ -175,7 +190,10 @@ func (m master) newSecretResource() *worker {
 	if m.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.Metrics.Observe(wo.GetResource())
+
 			timeOut := int64(m.Cfg.Timeout)
+
 			return m.Cfg.Client.CoreV1().Secrets(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 		wo.CallBack = func(event watch.Event) error {
@@ -196,7 +214,10 @@ func (m master) newServiceAccountResource() *worker {
 	if m.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.Metrics.Observe(wo.GetResource())
+
 			timeOut := int64(m.Cfg.Timeout)
+
 			return m.Cfg.Client.CoreV1().ServiceAccounts(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 		wo.CallBack = func(event watch.Event) error {
@@ -217,7 +238,10 @@ func (m master) newStatefulResource() *worker {
 	if m.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.Metrics.Observe(wo.GetResource())
+
 			timeOut := int64(m.Cfg.Timeout)
+
 			return m.Cfg.Client.AppsV1().StatefulSets(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 		wo.CallBack = func(event watch.Event) error {
@@ -238,7 +262,10 @@ func (m master) newHPAResource() *worker {
 	if m.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.Metrics.Observe(wo.GetResource())
+
 			timeOut := int64(m.Cfg.Timeout)
+
 			return m.Cfg.Client.AutoscalingV1().HorizontalPodAutoscalers(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 		wo.CallBack = func(event watch.Event) error {
@@ -259,7 +286,10 @@ func (m master) newIngressResource() *worker {
 	if m.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.Metrics.Observe(wo.GetResource())
+
 			timeOut := int64(m.Cfg.Timeout)
+
 			return m.Cfg.Client.NetworkingV1().Ingresses(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 		wo.CallBack = func(event watch.Event) error {
@@ -280,7 +310,10 @@ func (m master) newPVCResource() *worker {
 	if m.Cfg.Has(wo.Resource) {
 		wo.Status = enum.PendingStatus
 		wo.WatcherFunc = func(options v1.ListOptions) (watch.Interface, error) {
+			m.Metrics.Observe(wo.GetResource())
+
 			timeOut := int64(m.Cfg.Timeout)
+
 			return m.Cfg.Client.CoreV1().PersistentVolumeClaims(m.Cfg.Namespace).Watch(context.Background(), v1.ListOptions{TimeoutSeconds: &timeOut})
 		}
 		wo.CallBack = func(event watch.Event) error {
